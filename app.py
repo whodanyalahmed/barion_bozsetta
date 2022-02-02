@@ -13,9 +13,8 @@ logFile.write("\nStarted at: " + str(datetime.datetime.now()))
 gc = gspread.oauth()
 
 
-def get_values():
+def get_values(id):
 
-    id = "1-xdwVAJvSZnLVHM7vkSO3HoGQwPwfO30zrLC8_10Fy4"
 
     sht2 = gc.open_by_url('https://docs.google.com/spreadsheets/d/' + id)
     worksheet = sht2.worksheet("Sheet1")
@@ -75,7 +74,8 @@ def withdraw_funds(li):
                       " with account#: " + li[4])
 
 
-value_li = get_values()
+id = "1-xdwVAJvSZnLVHM7vkSO3HoGQwPwfO30zrLC8_10Fy4"
+value_li = get_values(id)
 for li in value_li:
     withdraw_funds(li)
 
