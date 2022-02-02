@@ -1,7 +1,15 @@
-from cv2 import getGaborKernel
 import requests
 import gspread
 import pandas as pd
+import datetime
+# add logger
+
+
+logFile = open("log.txt", "a+")
+
+logFile.write("\nStarted at: " + str(datetime.datetime.now()))
+
+
 gc = gspread.oauth()
 
 
@@ -40,17 +48,37 @@ def withdraw_funds(li):
             "Country": "HUN",
         }
     }
+
     # response = requests.get(uri, auth=(email, password))
 
     # add payload to request
     response = requests.post(uri, json=payload, auth=(email, password))
 
-    if(response.status_code == 200):
-        print("Successfully transferred to " +
-              li[2] + " with account#: " + li[4])
-        print(response.json())
+    # if(response.Errors == []):
+
+    errors = response.json()['Errors']
+    # get description from Errors
+    if(errors == []):
+
+        if(response.status_code == 200):
+            print("Success: Successfully transferred to " +
+                  li[2] + " with account#: " + li[4])
+            logFile.write("\nSucess: Successfully transferred to " +
+                          li[2] + " with account#: " + li[4])
+
+    # get Errors from response
+    else:
+        description = errors[0]['Description']
+
+        print("Error: " + str(description) + " with account#: " + li[4])
+        logFile.write("\nError: " + str(description) +
+                      " with account#: " + li[4])
 
 
-value_li = get_values()[0]
+value_li = get_values()
 for li in value_li:
     withdraw_funds(li)
+
+# close file
+logFile.write("\nFinished at: " + str(datetime.datetime.now()))
+logFile.close()
